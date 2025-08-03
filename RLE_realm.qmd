@@ -35,16 +35,18 @@ rle_count_mar <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_marine_ef
 rle_ext_mar <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_marine_efg_extent_km2_table.csv")
 
 
-# read in nba2018 results to fill in coastal sub antarctic and marine
+rle_count_coa <- rle_coast_count %>% filter(realm == "coa") %>% mutate(zone = "Total")
+# When marine coastal sorted then I can add mar coast extent
+######## to do 
+# rle_ext_coa <- rle_coast_ext %>% filter(realm == "coa") %>% mutate(zone = "Total")
+
+# read in nba2018 results to fill in  sub antarctic / marine
 nba18rlecount <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_rle_realm_count.csv")
 nba18rleext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_rle_realm_ext.csv")
 
 rle_count_sub <- filter(nba18rlecount, realm == "sub")
-rle_count_coa <- filter(nba18rlecount, realm == "coa")
-
-  
 rle_ext_sub <- filter(nba18rleext, realm == "sub")
-rle_ext_coa <- filter(nba18rleext, realm == "coa")
+
 
 ```
 
@@ -76,7 +78,7 @@ rle_count_mar <- rle_count_mar %>%
   mutate(realm = "mar") 
 
 # BIND tables of RLE count together
-rle_count_zones <- bind_rows(rle_count_ter, rle_count_riv, rle_count_wet, rle_count_mar, rle_count_est)
+rle_count_zones <- bind_rows(rle_count_ter, rle_count_riv, rle_count_wet, rle_count_mar, rle_count_est, rle_count_coa)
 
 rle_count_tot <- rle_count_zones %>%
   filter(zone == "Total") %>% 
@@ -86,7 +88,7 @@ rle_count_tot <- rle_count_zones %>%
     summarise(., across(CR:Total, \(x) sum(x, na.rm = TRUE))) %>%
       mutate(realm = "Overall")
   ) %>%
-  bind_rows(rle_count_coa, rle_count_sub)
+  bind_rows( rle_count_sub)
 
 rle_count_tot <-  rle_count_tot %>%
   rename( `Critically Endangered` = CR, 
@@ -138,7 +140,7 @@ rle_ext_mar <- rle_ext_mar %>%
   mutate(realm = "mar") 
 
 # BIND tables of RLE count together
-rle_ext_zones <- bind_rows(rle_ext_ter, rle_ext_riv, rle_ext_wet, rle_ext_est, rle_ext_mar)
+rle_ext_zones <- bind_rows(rle_ext_ter, rle_ext_riv, rle_ext_wet, rle_ext_est, rle_ext_mar, rle_ext_coa)
 
 rle_ext_tot <- rle_ext_zones %>%
   filter(zone == "Total") %>% 
@@ -148,7 +150,7 @@ rle_ext_tot <- rle_ext_zones %>%
     summarise(., across(CR:Total, \(x) sum(x, na.rm = TRUE))) %>%
       mutate(realm = "Overall")
   ) %>%
-  bind_rows(rle_ext_coa,rle_ext_sub )
+  bind_rows(rle_ext_sub )
 
 rle_ext_tot <-  rle_ext_tot %>%
   rename( `Critically Endangered` = CR, 

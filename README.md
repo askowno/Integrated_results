@@ -28,7 +28,7 @@ After importing all the results for eah realm they were combined in R tidyverse 
 
 ## Results
 
-| Count of Types                  | Extent of Types               |
-|---------------------------------|-------------------------------|
+| Count of Types | Extent of Types |
+|--------------------------------------------------|----------------------|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
-| ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
+| ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png){width="486"} |

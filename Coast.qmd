@@ -1,0 +1,270 @@
+---
+title: "Coast"
+format: html
+---
+
+```{r}
+
+# libraries
+library(tidyverse)
+library(readxl)
+library(nbaR)
+library(extrafont) # this has tools for embedding fonts in vector graphics which 
+# is required by the design team of the booklet.
+
+loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compatible with CorelDraw
+```
+
+```{r}
+# Import data
+
+rle_ter_type <- read.csv("C:/Rdata/RLE_terr/outputs/RLE_full_compiled_adjusted.csv")
+ter_extent <- read.csv("C:/Rdata/RLE_terr/outputs/results_A2b_B_ROD.csv")
+
+epl_ter_type <- read.csv("C:/Rdata/EPL_terr/outputs/results_df_EPL_2024_invasives2.csv")
+
+rle_est_type <- read.csv("C:/Rdata/RLE_est/outputs/rle_est_metrics_per_type.csv") 
+epl_est_type <- read.csv("C:/Rdata/EPL_est/outputs/epl_est_metrics_per_type.csv")
+
+# Marine data needs a hack not provided in correct format
+
+rle_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_type_table.csv")  %>%
+    mutate(LC = NT + LC) %>%
+  select(-X, -NT) %>%
+  rename(zone = ecosystem_functional_type_getl3) %>%
+  mutate(realm = "mar")
+
+
+rle_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_extent_km2_table.csv") %>%
+  mutate(LC = NT + LC) %>%
+  mutate(CR = CR, )
+  select(-X, -NT) %>%
+  rename(zone = ecosystem_functional_type_getl3) %>%
+  mutate(realm = "mar")
+
+
+epl_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_type_table.csv") %>%
+  select(-X) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(ecosystem_type = "Total", realm = "mar")) %>%
+      mutate(across(everything(), ~replace_na(., 0))) %>%
+  rename(zone =ecosystem_type) %>%
+  mutate(realm = "mar")
+
+epl_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_extent_km2_table.csv") %>%
+  select(-X) %>%
+  rename(zone = ecosystem_functional_type_getl3)%>%
+  mutate(realm = "mar")
+
+# coastal link
+coastalink <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Coast/coast-e-ecosystem_types.csv")
+
+
+ 
+```
+
+```{r}
+# Clean up terrestrial data and link to coastal list and calculate count and extent sumamries for RLE and EPL 
+
+# RLE ter COUNT
+
+rle_ter_c_type_count <-  rle_ter_type %>%
+  right_join(coastalink, by = "T_MAPCODE") %>%
+  select(type, RLE, Broad.Type) %>%
+  filter(!is.na(RLE)) %>%
+  rename(zone = Broad.Type) %>%
+  group_by(RLE, zone) %>%
+  summarise(count = n(),.groups = 'drop') %>%
+  pivot_wider(names_from = RLE, 
+              values_from = count, values_fill = 0) %>%
+   relocate(VU, .after = EN) %>%
+    # Add row-wise TOTAL
+  rowwise() %>%
+  mutate(Total = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  # Add TOTAL row (column-wise sums)
+  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
+  mutate(realm = "ter")
+
+# RLE ter EXTENT
+rle_ter_c_type_ext <-  rle_ter_type %>%
+  right_join(coastalink, by = "T_MAPCODE") %>%
+  select(type, X2022, RLE, Broad.Type) %>%
+  filter(!is.na(RLE)) %>%
+  rename(zone = Broad.Type, extent = X2022) %>%
+  group_by(RLE, zone) %>%
+  summarise(extent = sum(extent),.groups = 'drop') %>%
+  pivot_wider(names_from = RLE, 
+              values_from = extent, values_fill = 0) %>%
+   relocate(VU, .after = EN) %>%
+    # Add row-wise TOTAL
+  rowwise() %>%
+  mutate(Total = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  # Add TOTAL row (column-wise sums)
+  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
+  mutate(realm = "ter")
+ 
+###############################################################################
+
+epl_ter_c_type_count <-  epl_ter_type %>%
+ filter(!T_MAPCODE %in% c("FOa2", "FOa3")) %>%
+  right_join(coastalink, by = "T_MAPCODE") %>%
+  select(type, epl_nat_inv24, Broad.Type) %>%
+  filter(!is.na(epl_nat_inv24)) %>%
+  rename(zone = Broad.Type, EPL = epl_nat_inv24) %>%
+  group_by(EPL, zone) %>%
+    summarise(count = n(),.groups = 'drop') %>%
+  pivot_wider(names_from = EPL, 
+              values_from = count, values_fill = 0) %>%
+  relocate(WP, .before = MP)%>%
+  relocate(NP, .after = PP) %>%
+  # Add row-wise TOTAL
+  rowwise() %>%
+  mutate(Total = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  # Add TOTAL row (column-wise sums)
+  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
+  mutate(realm = "ter" )
+
+
+epl_ter_c_type_ext <-  epl_ter_type %>%
+ filter(!T_MAPCODE %in% c("FOa2", "FOa3")) %>%
+  right_join(coastalink, by = "T_MAPCODE") %>%
+   select(type, ext_vegrem, epl_nat_inv24, Broad.Type) %>%
+  filter(!is.na(epl_nat_inv24)) %>%
+  rename(zone = Broad.Type, EPL = epl_nat_inv24) %>%
+  group_by(EPL, zone) %>%
+    summarise(extent = sum(ext_vegrem),.groups = 'drop') %>%
+  pivot_wider(names_from = EPL, 
+              values_from = extent, values_fill = 0) %>%
+  relocate(WP, .before = MP)%>%
+  relocate(NP, .after = PP) %>%
+  # Add row-wise TOTAL
+  rowwise() %>%
+  mutate(Total = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  # Add TOTAL row (column-wise sums)
+  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
+  mutate(realm = "ter")
+
+  
+```
+
+```{r}
+# clean up esturine to match 
+epl_est_count <- epl_est_type %>%
+  count(full_ecosystem_type_name, EPL24_model) %>%
+  pivot_wider(
+    names_from = EPL24_model,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(full_ecosystem_type_name = "Total")
+  ) %>%
+  mutate(realm = "est") %>%
+  rename(zone = full_ecosystem_type_name) %>%
+  select(zone, WP, MP, PP, NP, realm)
+
+epl_est_ext <- epl_est_type %>%
+    pivot_wider(
+    names_from = EPL24_model,
+    values_from = tot_ext18,
+    values_fill = 0
+  ) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)/1e6) %>%
+      mutate(full_ecosystem_type_name = "Total")
+  ) %>%
+  mutate(realm = "est") %>%
+  rename(zone = full_ecosystem_type_name) %>%
+  select(zone, WP, MP, PP, NP, realm)
+
+#############################################################
+
+
+rle_est_count <- rle_est_type %>%
+  count(full_ecosystem_type_name, RLE24) %>%
+  pivot_wider(
+    names_from = RLE24,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(full_ecosystem_type_name = "Total")
+  ) %>%
+  mutate(realm = "est") %>%
+  rename(zone = full_ecosystem_type_name)%>%
+  select(zone, CR, EN, VU, LC, realm)
+
+rle_est_ext <- rle_est_type %>%
+    pivot_wider(
+    names_from = RLE24,
+    values_from = tot_ext24,
+    values_fill = 0
+  ) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)/ 1e6) %>%
+      mutate(full_ecosystem_type_name = "Total")
+  ) %>%
+  mutate(realm = "est") %>%
+  rename(zone = full_ecosystem_type_name) %>%
+  select(zone, CR, EN, VU, LC, realm)
+
+
+```
+
+```{r}
+# Combine the coastal data 
+# BIND tables together for RLE 
+
+rle_coast_count <- bind_rows(rle_ter_c_type_count, rle_est_count, rle_mar_c_type_count)
+rle_coast_count <-  rle_coast_count %>%
+  filter(zone == "Total") %>% 
+  relocate(realm, .before = zone) %>% 
+  select(-zone) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(realm = "coa")
+  ) %>% 
+  rowwise() %>%
+mutate(Total = sum(CR, EN, VU, LC))
+
+####### PROBLEMS as Tash send wrong data - it is named coastal but it same as mar ext rle)
+
+rle_coast_ext <- bind_rows(rle_ter_c_type_ext, rle_est_ext, rle_mar_c_type_ext) 
+rle_coast_ext <-  rle_coast_ext %>%
+  filter(zone == "Total") %>% 
+  relocate(realm, .before = zone) %>% 
+  select(-zone) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(realm = "coa")
+  ) %>% 
+  rowwise() %>%
+mutate(Total = sum(CR, EN, VU, LC))
+
+# EPL BIND  together data from est mar and ter
+
+
+epl_coast_count <- bind_rows(epl_ter_c_type_count, epl_est_count, epl_mar_c_type_count)
+epl_coast_count <-  epl_coast_count %>%
+  filter(zone == "Total") %>% 
+  relocate(realm, .before = zone) %>% 
+  select(-zone) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
+      mutate(realm = "coa")
+  ) %>% 
+  rowwise() %>%
+mutate(Total = sum(WP, MP, PP, NP))
+
+####### PROBLEMS as Tash send wrong data - it is named coastal but it same as mar ext epl)
+epl_coast_ext <- bind_rows(epl_ter_c_type_ext, epl_est_ext, epl_mar_c_type_ext)
+
+
+```
