@@ -108,7 +108,7 @@ mutate(realm = factor(realm, levels = c("Overall", "Sub-Antarctic", "Coastal", "
 
 
 # Write to file
-write.csv(rle_count_tot, "C:/Rdata/plot_export/outputs/rle_count_per_realm.csv")
+write.csv(rle_count_tot, "outputs/rle_count_per_realm.csv")
 ```
 
 ```{r}
@@ -169,7 +169,7 @@ mutate(realm = factor(realm, levels = c("Overall", "Sub-Antarctic", "Coastal", "
   filter(realm != "Overall")
 
 # Write to file
-write.csv(rle_ext_tot, "C:/Rdata/plot_export/outputs/rle_ext_per_realm.csv")
+write.csv(rle_ext_tot, "outputs/rle_ext_per_realm.csv")
 ```
 
 ```{r}
