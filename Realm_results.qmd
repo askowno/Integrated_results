@@ -3,6 +3,8 @@ title: "RLE_realm"
 format: html
 ---
 
+Load Libraries
+
 ```{r}
 # libraries
 library(tidyverse)
@@ -15,9 +17,22 @@ loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compat
 
 ```
 
+Import data for each realm.
+
+terrestrial, river, wetland, estuarine are also available in the output folders of the following repos:
+
+<https://github.com/askowno/RLE_terr/blob/main/outputs/ter_results_for_integration.csv>
+
+<https://github.com/askowno/RLE_est/blob/main/outputs/est_results_for_integration.csv>
+
+<https://github.com/askowno/RLE_wet/blob/main/outputs/wet_results_for_integration.csv>
+
+<https://github.com/askowno/RLE_riv/blob/main/outputs/riv_results_for_integration.csv>
+
 ```{r}
 # import RLE data for each realm and then make integrated table
-#COUNTS and EXTENT RLE
+# COUNTS and EXTENT RLE and EPL
+# levels added to get cols in right sequence but not sure they are needed for the plots 
 
 ter_results <- read.csv("C:/Rdata/RLE_terr/outputs/ter_results_for_integration.csv") %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
@@ -47,11 +62,9 @@ coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
 coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
 coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
-# wet_rle_count <- filter(nba18rlecount, realm == "wet") %>% select(-Total)
-# wet_rle_ext   <- filter(nba18rleext, realm == "wet") %>% select(-Total)
-# wet_epl_count <- filter(nba18eplcount, realm == "wet") %>% select(-Total)
-# wet_epl_ext   <- filter(nba18eplext, realm == "wet") %>% select(-Total)
 ```
+
+Reformat the data to ensure that the results can be "bound" in to a single table for each metric RLE count, RLE extent, EPL count, EPL extent. Adding realm column to ensure than in bound data one can id the rows for each realm.
 
 ```{r}
 ter_rle_count <- ter_results %>%
@@ -120,6 +133,8 @@ wet_rle_extent <- wet_results %>%
 
 ```
 
+Repeat data compilaiton for EPL
+
 ```{r}
 
 ter_epl_count <- ter_results %>%
@@ -185,7 +200,7 @@ wet_epl_ext <- wet_results %>%
 # Add coastal 
 ```
 
-RLE results per realm
+RLE results per realm (put all the tables together)
 
 ```{r}
 
