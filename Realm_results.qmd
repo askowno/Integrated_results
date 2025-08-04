@@ -19,15 +19,15 @@ loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compat
 # import RLE data for each realm and then make integrated table
 #COUNTS and EXTENT RLE
 
-ter_results <- read.csv("C:/Rdata/RLE_terr/outputs/ter_results_for_integration.csv")
+ter_results <- read.csv("C:/Rdata/RLE_terr/outputs/ter_results_for_integration.csv") %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-riv_results <- read.csv("C:/Rdata/RLE_riv/outputs/riv_results_for_integration.csv")
+riv_results <- read.csv("C:/Rdata/RLE_riv/outputs/riv_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-#wet_results <- read.csv("C:/Rdata/RLE_wet/outputs/wet_results_for_integration.csv")
+wet_results <- read.csv("C:/Rdata/RLE_wet/outputs/wet_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-est_results <- read.csv("C:/Rdata/RLE_est/outputs/est_results_for_integration.csv")
+est_results <- read.csv("C:/Rdata/RLE_est/outputs/est_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-mar_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/mar_results_for_integration.csv")
+mar_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/mar_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "NT", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
 
 # read in nba2018 results to fill in  sub antarctic / marine
@@ -47,10 +47,10 @@ coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
 coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
 coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
-wet_rle_count <- filter(nba18rlecount, realm == "wet") %>% select(-Total)
-wet_rle_ext   <- filter(nba18rleext, realm == "wet") %>% select(-Total)
-wet_epl_count <- filter(nba18eplcount, realm == "wet") %>% select(-Total)
-wet_epl_ext   <- filter(nba18eplext, realm == "wet") %>% select(-Total)
+# wet_rle_count <- filter(nba18rlecount, realm == "wet") %>% select(-Total)
+# wet_rle_ext   <- filter(nba18rleext, realm == "wet") %>% select(-Total)
+# wet_epl_count <- filter(nba18eplcount, realm == "wet") %>% select(-Total)
+# wet_epl_ext   <- filter(nba18eplext, realm == "wet") %>% select(-Total)
 ```
 
 ```{r}
@@ -100,21 +100,21 @@ riv_rle_count <- riv_results %>%
 riv_rle_ext <- riv_results %>%
   select(RLE, extent) %>%
   group_by(RLE) %>%
-  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e6) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e3) %>%
   pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
   mutate(realm = "riv")
 
-# wet_rle_count <- wet_results %>%
-#   select(RLE, type) %>%
-#     count(RLE) %>%
-#   pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
-#   mutate(realm = "wet")
-# wet_rle_extent <- wet_results %>%
-#   select(RLE, extent) %>%
-#   group_by(RLE) %>%
-#   summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
-#   pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
-#   mutate(realm = "wet")
+wet_rle_count <- wet_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "wet")
+wet_rle_extent <- wet_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "wet")
 
 # Add coastal when done
 
@@ -166,9 +166,23 @@ riv_epl_count <- riv_results %>%
 riv_epl_ext <- riv_results %>%
   select(EPL, extent) %>%
   group_by(EPL) %>%
-  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e6) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e3) %>%
   pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
   mutate(realm = "riv")
+
+wet_epl_count <- wet_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "wet")
+wet_epl_ext <- wet_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "wet")
+
+# Add coastal 
 ```
 
 RLE results per realm
@@ -236,7 +250,7 @@ epl_count_all <- bind_rows(ter_epl_count, mar_epl_count, est_epl_count, riv_epl_
                         "ter" = "Terrestrial",
                         "Overall" = "Overall"))  %>%  
 mutate(realm = factor(realm, levels = c( "Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
-  arrange(realm) 
+  arrange(realm)
 
 # Write to file
 write.csv(epl_count_all, "outputs/epl_count_per_realm.csv")
@@ -351,19 +365,18 @@ epl_count_plot <- epl_count_plot +
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
 
 ggsave(
-  filename = "outputs/epl_count_plot.pdf",    # File name with extension for format
-  plot = epl_count_plot,
+  filename = "outputs/rle_count_plot.pdf",    # File name with extension for format
+  plot = rle_count_plot,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
   width = 9, height = 7, units = "cm") 
 
 
 # png format for maps and web content plots and maps 
 ggsave(
-  filename = "outputs/epl_count_plot.png",    # File name with extension for format
-  plot = epl_count_plot,
+  filename = "outputs/rle_count_plot.png",    # File name with extension for format
+  plot = rle_count_plot,
   dpi = 300, 
   width = 9, height = 7, units = "cm") 
-
 ```
 
 ```{r}
@@ -374,10 +387,11 @@ epl_ext_plot <- nba_plot(epl_ext_all,
                      1:4,
                      CHRT = "bar",
                      NUM = FALSE,
-                     LAB = "Percentage of ecosystem extent",
+                     LAB = "Extent of ecosystem types",
                      SAVE = NULL,
                      SCALE_TEXT = 0.6)
 
+epl_ext_plot
 epl_ext_plot <- epl_ext_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom

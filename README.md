@@ -8,27 +8,33 @@ Terrestial, marine, estuarine and freshwater assessments completed in 2025, the 
 
 **GitHub Repositories for each assessment detail the assessment workflows:**
 
-RLE_ter and EPL_ter
+RLE_ter and EPL_ter:
 
-RLE_est and EPL_est
+RLE_est and EPL_est:
 
-RLE_riv and EPL_riv
+RLE_riv and EPL_riv:
 
-RLE_wet and EPL wet
+RLE_wet and EPL wet:
 
-Marine
+Marine:
 
-Coastal
+Coastal:
 
-After importing all the results for eah realm they were combined in R tidyverse and plotted using ggplot2:
+After importing all the results for each realm they were combined in R tidyverse and plotted using ggplot2:
 
-[RLE_realm.qmd](RLE_realm.qmd)
-
-[EPL_realm.qmd](EPL_realm.qmd)
+[Relam_results.qmd](Relam_results.qmd)
 
 ## Results
 
+[outputs/epl_cout_per_realm.csv](outputs/epl_cout_per_realm.csv)
+
+[outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
+
+[outputs/rle_cout_per_realm.csv](outputs/rle_cout_per_realm.csv)
+
+[outputs/rle_ext_per_realm.csv](outputs/rle_count_per_realm.csv)
+
 | Count of Types | Extent of Types |
-|----|----|
+|------------------------------------|------------------------------------|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png){width="486"} |
