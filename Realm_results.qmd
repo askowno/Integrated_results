@@ -270,7 +270,7 @@ RLE plots per realm
 
 rle_count_plot <- nba_plot(rle_count_all,
                      `realm`,
-                     2:5,
+                     1:4,
                      CHRT = "bar",
                      NUM = TRUE,
                      LAB = "Percentage of ecosystem types",
@@ -303,7 +303,7 @@ ggsave(
 
 rle_ext_plot <- nba_plot(rle_ext_all,
                      `realm`,
-                     2:5,
+                     1:4,
                      CHRT = "bar",
                      NUM = FALSE,
                      LAB = "Percentage of ecosystem extent",
@@ -338,7 +338,7 @@ EPL plots per realm
 
 epl_count_plot <- nba_plot(epl_count_all,
                      `realm`,
-                     2:5,
+                     1:4,
                      CHRT = "bar",
                      NUM = TRUE,
                      LAB = "Percentage of ecosystem types",
@@ -371,7 +371,7 @@ ggsave(
 
 epl_ext_plot <- nba_plot(epl_ext_all,
                      `realm`,
-                     2:5,
+                     1:4,
                      CHRT = "bar",
                      NUM = FALSE,
                      LAB = "Percentage of ecosystem extent",
