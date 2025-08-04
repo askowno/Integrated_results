@@ -19,78 +19,161 @@ loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compat
 # import RLE data for each realm and then make integrated table
 #COUNTS and EXTENT RLE
 
-rle_count_ter <- read.csv("C:/Rdata/RLE_terr/outputs/rle_count.csv")
-rle_ext_ter <- read.csv("C:/Rdata/RLE_terr/outputs/rle_ext.csv")
+ter_results <- read.csv("C:/Rdata/RLE_terr/outputs/ter_results_for_integration.csv")
 
-rle_count_est <- read.csv("C:/Rdata/RLE_est/outputs/rle24_est_sum_count.csv") 
-rle_ext_est <- read.csv("C:/Rdata/RLE_est/outputs/rle24_est_sum_ext.csv") 
+riv_results <- read.csv("C:/Rdata/RLE_riv/outputs/riv_results_for_integration.csv")
 
-rle_count_riv <- read.csv("C:/Rdata/RLE_riv/outputs/rle24_riv_count.csv")
-rle_ext_riv <- read.csv("C:/Rdata/RLE_riv/outputs/rle24_riv_ext.csv")
+#wet_results <- read.csv("C:/Rdata/RLE_wet/outputs/wet_results_for_integration.csv")
 
-rle_count_wet <- read.csv("C:/Rdata/RLE_wet/outputs/rle24_wet_count.csv")
-rle_ext_wet <- read.csv("C:/Rdata/RLE_wet/outputs/rle24_wet_ext.csv")
+est_results <- read.csv("C:/Rdata/RLE_est/outputs/est_results_for_integration.csv")
 
-rle_count_mar <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_marine_efg_type_table.csv")
-rle_ext_mar <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_marine_efg_extent_km2_table.csv")
+mar_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/mar_results_for_integration.csv")
 
-
-rle_count_coa <- rle_coast_count %>% filter(realm == "coa") %>% mutate(zone = "Total")
-# When marine coastal sorted then I can add mar coast extent
-######## to do 
-# rle_ext_coa <- rle_coast_ext %>% filter(realm == "coa") %>% mutate(zone = "Total")
 
 # read in nba2018 results to fill in  sub antarctic / marine
 nba18rlecount <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_rle_realm_count.csv")
 nba18rleext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_rle_realm_ext.csv")
+nba18eplcount <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_epl_realm_count.csv")
+nba18eplext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_epl_realm_ext.csv")
 
-rle_count_sub <- filter(nba18rlecount, realm == "sub")
-rle_ext_sub <- filter(nba18rleext, realm == "sub")
+sub_rle_count <- filter(nba18rlecount, realm == "sub") %>% select(-Total)
+sub_rle_ext   <- filter(nba18rleext, realm == "sub") %>% select(-Total)
+sub_epl_count <- filter(nba18eplcount, realm == "sub") %>% select(-Total)
+sub_epl_ext   <- filter(nba18eplext, realm == "sub") %>% select(-Total)
 
+# use nba2018 results for wetlands and coastal for now
+coa_rle_count <- filter(nba18rlecount, realm == "coa") %>% select(-Total)
+coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
+coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
+coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
+wet_rle_count <- filter(nba18rlecount, realm == "wet") %>% select(-Total)
+wet_rle_ext   <- filter(nba18rleext, realm == "wet") %>% select(-Total)
+wet_epl_count <- filter(nba18eplcount, realm == "wet") %>% select(-Total)
+wet_epl_ext   <- filter(nba18eplext, realm == "wet") %>% select(-Total)
 ```
 
 ```{r}
-# Clean up and consolidate counts per realm
-rle_count_ter <- rle_count_ter %>%
-  select(-X, -RLIE) %>%
-  rename(zone = T_BIOME) %>%
+ter_rle_count <- ter_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
   mutate(realm = "ter")
+ter_rle_extent <- ter_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "ter")
+  
+mar_rle_count <- mar_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "mar") %>%
+  mutate(LC = NT + LC) %>% select(-NT)
+mar_rle_extent <- mar_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "mar") %>%
+  mutate(LC = NT + LC) %>% select(-NT)
 
-rle_count_est <- rle_count_est %>%
-  select(-X, -RLIE) %>%
-  rename(zone = biogeographical_zone) %>%
+est_rle_count <- est_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "est")
+est_rle_extent <- est_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
   mutate(realm = "est")
 
-rle_count_riv <- rle_count_riv %>%
-  select(-X, -RLIE) %>%
+riv_rle_count <- riv_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "riv")
+riv_rle_extent <- riv_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e6) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
   mutate(realm = "riv")
 
-rle_count_wet <- rle_count_wet %>%
-  select(-RLIE) %>%
-  rename(zone = hgm) %>%
-  mutate(realm = "wet")
+# wet_rle_count <- wet_results %>%
+#   select(RLE, type) %>%
+#     count(RLE) %>%
+#   pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+#   mutate(realm = "wet")
+# wet_rle_extent <- wet_results %>%
+#   select(RLE, extent) %>%
+#   group_by(RLE) %>%
+#   summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+#   pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+#   mutate(realm = "wet")
 
-rle_count_mar <- rle_count_mar %>%
-  mutate(LC = LC+NT) %>%
-  select(-X, -NT) %>%
-  rename(zone = ecosystem_functional_type_getl3) %>%
-  mutate(realm = "mar") 
+# Add coastal when done
+  
+```
+
+```{r}
+ter_epl_count <- ter_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "ter")
+ter_epl_extent <- ter_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "ter")
+  
+mar_epl_count <- mar_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "mar")
+mar_epl_extent <- mar_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "mar")
+  
+est_epl_count <- est_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "est")
+est_epl_extent <- est_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "est")
+
+riv_epl_count <- riv_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "riv")
+riv_epl_extent <- riv_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e6) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "riv")
+```
+
+```{r}
 
 # BIND tables of RLE count together
-rle_count_zones <- bind_rows(rle_count_ter, rle_count_riv, rle_count_wet, rle_count_mar, rle_count_est, rle_count_coa)
-
-rle_count_tot <- rle_count_zones %>%
-  filter(zone == "Total") %>% 
-  relocate(realm, .before = zone) %>% 
-  select(-zone) %>%
-  bind_rows(
-    summarise(., across(CR:Total, \(x) sum(x, na.rm = TRUE))) %>%
-      mutate(realm = "Overall")
-  ) %>%
-  bind_rows( rle_count_sub)
-
-rle_count_tot <-  rle_count_tot %>%
+rle_count_all <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count, wet_rle_count, est_rle_count, coa_rle_count, sub_rle_count) %>%
   rename( `Critically Endangered` = CR, 
          `Endangered` = EN, 
          `Vulnerable` = VU, 
@@ -102,34 +185,51 @@ rle_count_tot <-  rle_count_tot %>%
                         "est" = "Estuarine",
                         "wet" = "Wetland",
                         "riv" = "River",
-                        "ter" = "Terrestrial",
-                        "Overall" = "Overall"))  %>%  
-mutate(realm = factor(realm, levels = c("Overall", "Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
-  arrange(realm) %>%
-  filter(realm != "Overall")
-
+                        "ter" = "Terrestrial"))  %>%  
+mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+  arrange(realm)
 
 # Write to file
-write.csv(rle_count_tot, "outputs/rle_count_per_realm.csv")
+write.csv(rle_count_all, "outputs/rle_count_per_realm.csv")
+
+# BIND tables of RLE extent together
+rle_ext_all <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext, wet_rle_ext, est_rle_ext, coa_rle_ext, sub_rle_ext) %>%
+  rename( `Critically Endangered` = CR, 
+         `Endangered` = EN, 
+         `Vulnerable` = VU, 
+         `Least Concern` = LC ) %>%
+   mutate(realm = recode(realm,
+                        "sub" = "Sub-Antarctic",
+                        "coa" = "Coastal", 
+                        "mar" = "Marine",
+                        "est" = "Estuarine",
+                        "wet" = "Wetland",
+                        "riv" = "River",
+                        "ter" = "Terrestrial"))  %>%  
+mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+  arrange(realm)
+
+# Write to file
+write.csv(rle_ext_all, "outputs/rle_ext_per_realm.csv")
 ```
 
 ```{r}
 # Clean upand consolidate extent per realm
-rle_ext_ter <- rle_ext_ter %>%
+epl_ext_ter <- epl_ext_ter %>%
   select(-X) %>%
   rename(zone = T_BIOME) %>%
   mutate(realm = "ter")
 
-rle_ext_est <- rle_ext_est %>%
+epl_ext_est <- epl_ext_est %>%
   select(-X) %>%
   rename(zone = biogeographical_zone) %>%
   mutate(realm = "est")
 
-rle_ext_riv <- rle_ext_riv %>%
+epl_ext_riv <- epl_ext_riv %>%
   select(-X) %>%
   mutate(realm = "riv")
 
-rle_ext_wet <- rle_ext_wet %>%
+epl_ext_wet <- epl_ext_wet %>%
   rename(zone = hgm) %>%
   mutate(realm = "wet")
 
@@ -237,5 +337,9 @@ ggsave(
   plot = rle_ext_plot,
   dpi = 300, 
   width = 9, height = 7, units = "cm") 
+
+```
+
+```{r}
 
 ```

@@ -15,32 +15,33 @@ library(extrafont) # this has tools for embedding fonts in vector graphics which
 loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compatible with CorelDraw
 ```
 
+Data import : per type data for RLE and EPL with extent
+
 ```{r}
-# Import data
+# Import data for each realm, both count and extent per RLE and EPL category.
 
 rle_ter_type <- read.csv("C:/Rdata/RLE_terr/outputs/RLE_full_compiled_adjusted.csv")
-ter_extent <- read.csv("C:/Rdata/RLE_terr/outputs/results_A2b_B_ROD.csv")
-
 epl_ter_type <- read.csv("C:/Rdata/EPL_terr/outputs/results_df_EPL_2024_invasives2.csv")
 
 rle_est_type <- read.csv("C:/Rdata/RLE_est/outputs/rle_est_metrics_per_type.csv") 
 epl_est_type <- read.csv("C:/Rdata/EPL_est/outputs/epl_est_metrics_per_type.csv")
 
-# Marine data needs a hack not provided in correct format
+# Marine data needs a hack - not provided in correct format (efg not type level) but OK for now
 
 rle_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_type_table.csv")  %>%
     mutate(LC = NT + LC) %>%
-  select(-X, -NT) %>%
-  rename(zone = ecosystem_functional_type_getl3) %>%
-  mutate(realm = "mar")
+    select(-X, -NT) %>%
+    rename(zone = ecosystem_functional_type_getl3) %>%
+    mutate(realm = "mar")
 
+# Marine extent data for coastal not provided - This will change with new data 
 
-rle_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_extent_km2_table.csv") %>%
-  mutate(LC = NT + LC) %>%
-  mutate(CR = CR, )
-  select(-X, -NT) %>%
-  rename(zone = ecosystem_functional_type_getl3) %>%
-  mutate(realm = "mar")
+# rle_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_extent_km2_table.csv") %>%
+#   mutate(LC = NT + LC) %>%
+#   mutate(CR = CR, )
+#   select(-X, -NT) %>%
+#   rename(zone = ecosystem_functional_type_getl3) %>%
+#   mutate(realm = "mar")
 
 
 epl_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_type_table.csv") %>%
@@ -52,28 +53,29 @@ epl_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_co
   rename(zone =ecosystem_type) %>%
   mutate(realm = "mar")
 
-epl_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_extent_km2_table.csv") %>%
-  select(-X) %>%
-  rename(zone = ecosystem_functional_type_getl3)%>%
-  mutate(realm = "mar")
+# epl_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_extent_km2_table.csv") %>%
+#   select(-X) %>%
+#   rename(zone = ecosystem_functional_type_getl3)%>%
+#   mutate(realm = "mar")
 
-# coastal link
+# coastal link - this file is used to ID ter types that are coastal 
 coastalink <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Coast/coast-e-ecosystem_types.csv")
 
 
  
 ```
 
+Terrestrial data clean up: link to coastal list to subset to ter coastal types, then remove non ter types, and calculate count of types per class and extent of types per class.
+
 ```{r}
 # Clean up terrestrial data and link to coastal list and calculate count and extent sumamries for RLE and EPL 
 
 # RLE ter COUNT
-
 rle_ter_c_type_count <-  rle_ter_type %>%
-  right_join(coastalink, by = "T_MAPCODE") %>%
+  right_join(coastalink, by = "T_MAPCODE") %>% #RJ to select only ter typs in coastal list
   select(type, RLE, Broad.Type) %>%
-  filter(!is.na(RLE)) %>%
-  rename(zone = Broad.Type) %>%
+  filter(!is.na(RLE)) %>% # use only ter part of list (drop mar and est) 
+  rename(zone = Broad.Type) %>% #could change to 
   group_by(RLE, zone) %>%
   summarise(count = n(),.groups = 'drop') %>%
   pivot_wider(names_from = RLE, 
@@ -149,11 +151,10 @@ epl_ter_c_type_ext <-  epl_ter_type %>%
   bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
   mutate(realm = "ter")
 
-  
 ```
 
 ```{r}
-# clean up esturine to match 
+# clean up estuarine to match 
 epl_est_count <- epl_est_type %>%
   count(full_ecosystem_type_name, EPL24_model) %>%
   pivot_wider(
