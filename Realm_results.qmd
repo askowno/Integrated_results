@@ -64,7 +64,7 @@ coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
 ```
 
-Reformat the data to ensure that the results can be "bound" in to a single table for each metric RLE count, RLE extent, EPL count, EPL extent. Adding realm column to ensure than in bound data one can id the rows for each realm.
+Reformat the data to ensure that the results can be "bound" into a single table for each metric (RLE count, RLE extent, EPL count, EPL extent). Add realm column to ensure than in the bound data one can identify the rows for each realm.
 
 ```{r}
 ter_rle_count <- ter_results %>%
@@ -380,16 +380,16 @@ epl_count_plot <- epl_count_plot +
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
 
 ggsave(
-  filename = "outputs/rle_count_plot.pdf",    # File name with extension for format
-  plot = rle_count_plot,
+  filename = "outputs/epl_count_plot.pdf",    # File name with extension for format
+  plot = epl_count_plot,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
   width = 9, height = 7, units = "cm") 
 
 
 # png format for maps and web content plots and maps 
 ggsave(
-  filename = "outputs/rle_count_plot.png",    # File name with extension for format
-  plot = rle_count_plot,
+  filename = "outputs/epl_count_plot.png",    # File name with extension for format
+  plot = epl_count_plot,
   dpi = 300, 
   width = 9, height = 7, units = "cm") 
 ```
@@ -406,7 +406,6 @@ epl_ext_plot <- nba_plot(epl_ext_all,
                      SAVE = NULL,
                      SCALE_TEXT = 0.6)
 
-epl_ext_plot
 epl_ext_plot <- epl_ext_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom

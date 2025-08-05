@@ -26,13 +26,13 @@ After importing all the results for each realm they were combined in R tidyverse
 
 ## Results
 
-[outputs/epl_cout_per_realm.csv](outputs/epl_cout_per_realm.csv)
+[outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv)
 
 [outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
 
-[outputs/rle_cout_per_realm.csv](outputs/rle_cout_per_realm.csv)
+[outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv)
 
-[outputs/rle_ext_per_realm.csv](outputs/rle_count_per_realm.csv)
+[outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
 
 | Count of Types | Extent of Types |
 |------------------------------------|------------------------------------|
