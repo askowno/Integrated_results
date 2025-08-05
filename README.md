@@ -8,33 +8,31 @@ Terrestial, marine, estuarine and freshwater assessments completed in 2025, the 
 
 **GitHub Repositories for each assessment detail the assessment workflows:**
 
-RLE_ter and EPL_ter:
+[https://github.com/askowno/RLE_terr/](https://github.com/askowno/RLE_terr/blob/main/outputs/ter_results_for_integration.csv){.uri}
 
-RLE_est and EPL_est:
+<https://github.com/askowno/RLE_est/>
 
-RLE_riv and EPL_riv:
+<https://github.com/askowno/RLE_wet/>
 
-RLE_wet and EPL wet:
+<https://github.com/askowno/RLE_riv/>
 
 Marine:
 
 Coastal:
 
-After importing all the results for each realm they were combined in R tidyverse and plotted using ggplot2:
+After importing the results for each realm they were combined in R tidyverse and plotted using ggplot2:
 
-[Relam_results.qmd](Relam_results.qmd)
+[Realm_results.qmd](Realm_results.qmd)
 
 ## Results
 
-[outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv)
+Red List of Ecosystems per realm: [outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv); [outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
 
-[outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
+Ecosystem Protection Level per realm: [outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv);[outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
 
-[outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv)
-
-[outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
-
-| Count of Types | Extent of Types |
-|------------------------------------|------------------------------------|
+| Count of Types                  | Extent of Types               |
+|---------------------------------|-------------------------------|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
-| ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png){width="486"} |
+| ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
+
+Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder
