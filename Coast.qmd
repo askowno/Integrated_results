@@ -15,142 +15,161 @@ library(extrafont) # this has tools for embedding fonts in vector graphics which
 loadfonts(device = "pdf") # this is required as device = cairo_pdf is not compatible with CorelDraw
 ```
 
-Data import : per type data for RLE and EPL with extent
+Data import terrestrial, marine and estuary data : per type data for RLE and EPL with extent, and import a coastal link file to identify coastal ecosystems in marine and terrestrial realms (all estuaries are coastal).
 
 ```{r}
-# Import data for each realm, both count and extent per RLE and EPL category.
+# Import data for terrestial marine and estuarine realm, both count and extent per RLE and EPL category.
 
-rle_ter_type <- read.csv("C:/Rdata/RLE_terr/outputs/RLE_full_compiled_adjusted.csv")
-epl_ter_type <- read.csv("C:/Rdata/EPL_terr/outputs/results_df_EPL_2024_invasives2.csv")
+ter_results <- read.csv("C:/Rdata/RLE_terr/outputs/ter_results_for_integration.csv") %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-rle_est_type <- read.csv("C:/Rdata/RLE_est/outputs/rle_est_metrics_per_type.csv") 
-epl_est_type <- read.csv("C:/Rdata/EPL_est/outputs/epl_est_metrics_per_type.csv")
+est_results <- read.csv("C:/Rdata/RLE_est/outputs/est_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
-# Marine data needs a hack - not provided in correct format (efg not type level) but OK for now
-
-rle_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_type_table.csv")  %>%
-    mutate(LC = NT + LC) %>%
-    select(-X, -NT) %>%
-    rename(zone = ecosystem_functional_type_getl3) %>%
-    mutate(realm = "mar")
-
-# Marine extent data for coastal not provided - This will change with new data 
-
-# rle_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/ETS_coast_efg_extent_km2_table.csv") %>%
-#   mutate(LC = NT + LC) %>%
-#   mutate(CR = CR, )
-#   select(-X, -NT) %>%
-#   rename(zone = ecosystem_functional_type_getl3) %>%
-#   mutate(realm = "mar")
-
-
-epl_mar_c_type_count <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_type_table.csv") %>%
-  select(-X) %>%
-  bind_rows(
-    summarise(., across(where(is.numeric), sum, na.rm = TRUE)) %>%
-      mutate(ecosystem_type = "Total", realm = "mar")) %>%
-      mutate(across(everything(), ~replace_na(., 0))) %>%
-  rename(zone =ecosystem_type) %>%
-  mutate(realm = "mar")
-
-# epl_mar_c_type_ext <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/EPL_coast_eco_extent_km2_table.csv") %>%
-#   select(-X) %>%
-#   rename(zone = ecosystem_functional_type_getl3)%>%
-#   mutate(realm = "mar")
+mar_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/mar_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "NT", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
 # coastal link - this file is used to ID ter types that are coastal 
 coastalink <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Coast/coast-e-ecosystem_types.csv")
-
 
  
 ```
 
 Terrestrial data clean up: link to coastal list to subset to ter coastal types, then remove non ter types, and calculate count of types per class and extent of types per class.
 
+RLE count for coastal types
+
 ```{r}
 # Clean up terrestrial data and link to coastal list and calculate count and extent sumamries for RLE and EPL 
 
 # RLE ter COUNT
-rle_ter_c_type_count <-  rle_ter_type %>%
-  right_join(coastalink, by = "T_MAPCODE") %>% #RJ to select only ter typs in coastal list
-  select(type, RLE, Broad.Type) %>%
+rle_ter_c_count <-  ter_results %>%
+  right_join(coastalink, by = c( "type" ="T_MAPCODE" )) %>% #RJ to select only ter typs in coastal list
+  select(type, RLE) %>%
   filter(!is.na(RLE)) %>% # use only ter part of list (drop mar and est) 
-  rename(zone = Broad.Type) %>% #could change to 
-  group_by(RLE, zone) %>%
-  summarise(count = n(),.groups = 'drop') %>%
+  count(RLE) %>%
   pivot_wider(names_from = RLE, 
-              values_from = count, values_fill = 0) %>%
+              values_from = n, values_fill = 0) %>%
    relocate(VU, .after = EN) %>%
-    # Add row-wise TOTAL
-  rowwise() %>%
-  mutate(Total = sum(c_across(where(is.numeric)))) %>%
-  ungroup() %>%
-  # Add TOTAL row (column-wise sums)
-  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
   mutate(realm = "ter")
 
-# RLE ter EXTENT
-rle_ter_c_type_ext <-  rle_ter_type %>%
-  right_join(coastalink, by = "T_MAPCODE") %>%
-  select(type, X2022, RLE, Broad.Type) %>%
-  filter(!is.na(RLE)) %>%
-  rename(zone = Broad.Type, extent = X2022) %>%
-  group_by(RLE, zone) %>%
-  summarise(extent = sum(extent),.groups = 'drop') %>%
+# RLE mar COUNT
+rle_mar_c_count <-  mar_results %>%
+  right_join(coastalink, by =  "type") %>% #RJ to select only ter typs in coastal list
+  select(type, RLE) %>%
+  filter(!is.na(RLE)) %>% # use only ter part of list (drop mar and est) 
+  count(RLE) %>%
   pivot_wider(names_from = RLE, 
-              values_from = extent, values_fill = 0) %>%
+              values_from = n, values_fill = 0) %>%
    relocate(VU, .after = EN) %>%
-    # Add row-wise TOTAL
-  rowwise() %>%
-  mutate(Total = sum(c_across(where(is.numeric)))) %>%
-  ungroup() %>%
-  # Add TOTAL row (column-wise sums)
-  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
-  mutate(realm = "ter")
- 
-###############################################################################
+  mutate(realm = "mar") %>% mutate (LC = NT+LC) %>% select(-NT)
 
-epl_ter_c_type_count <-  epl_ter_type %>%
- filter(!T_MAPCODE %in% c("FOa2", "FOa3")) %>%
-  right_join(coastalink, by = "T_MAPCODE") %>%
-  select(type, epl_nat_inv24, Broad.Type) %>%
-  filter(!is.na(epl_nat_inv24)) %>%
-  rename(zone = Broad.Type, EPL = epl_nat_inv24) %>%
-  group_by(EPL, zone) %>%
-    summarise(count = n(),.groups = 'drop') %>%
-  pivot_wider(names_from = EPL, 
-              values_from = count, values_fill = 0) %>%
-  relocate(WP, .before = MP)%>%
-  relocate(NP, .after = PP) %>%
-  # Add row-wise TOTAL
-  rowwise() %>%
-  mutate(Total = sum(c_across(where(is.numeric)))) %>%
-  ungroup() %>%
-  # Add TOTAL row (column-wise sums)
-  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
-  mutate(realm = "ter" )
+# RLE est count from Realm results workflow = est_rle_count
 
+################ BIND results for coastal rle count
+coa_rle_count <- bind_rows(est_rle_count, rle_mar_c_count, rle_ter_c_count) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), ~sum(.x, na.rm = TRUE)) %>%
+                mutate(realm = "coa"))) %>%   filter(realm =="coa")
 
-epl_ter_c_type_ext <-  epl_ter_type %>%
- filter(!T_MAPCODE %in% c("FOa2", "FOa3")) %>%
-  right_join(coastalink, by = "T_MAPCODE") %>%
-   select(type, ext_vegrem, epl_nat_inv24, Broad.Type) %>%
-  filter(!is.na(epl_nat_inv24)) %>%
-  rename(zone = Broad.Type, EPL = epl_nat_inv24) %>%
-  group_by(EPL, zone) %>%
-    summarise(extent = sum(ext_vegrem),.groups = 'drop') %>%
-  pivot_wider(names_from = EPL, 
-              values_from = extent, values_fill = 0) %>%
-  relocate(WP, .before = MP)%>%
-  relocate(NP, .after = PP) %>%
-  # Add row-wise TOTAL
-  rowwise() %>%
-  mutate(Total = sum(c_across(where(is.numeric)))) %>%
-  ungroup() %>%
-  # Add TOTAL row (column-wise sums)
-  bind_rows(summarise(., zone = "Total", across(where(is.numeric), sum))) %>%
+```
+
+RLE extent for coastal types
+
+```{r}
+
+# RLE ter EXT
+rle_ter_c_ext <-  ter_results %>%
+  right_join(coastalink, by = c( "type" ="T_MAPCODE" )) %>% #RJ to select only ter typs in coastal list
+  select(type, RLE, extent) %>%
+  filter(!is.na(RLE)) %>% # use only ter part of list (drop mar and est) 
+  group_by(RLE) %>%
+  summarise(extent = sum(extent), .groups = "drop" ) %>%
+  pivot_wider(names_from = RLE, values_from = extent, values_fill = 0) %>%
+   relocate(VU, .after = EN) %>%
   mutate(realm = "ter")
 
+# RLE mar ext
+rle_mar_c_ext <-  mar_results %>%
+  right_join(coastalink, by =  "type") %>% 
+  select(type, RLE, extent) %>%
+  filter(!is.na(RLE)) %>% # use only ter part of list (drop mar and est) 
+  group_by(RLE) %>%
+  summarise(extent = sum(extent), .groups = "drop" ) %>%
+  pivot_wider(names_from = RLE, values_from = extent, values_fill = 0) %>%
+   relocate(VU, .after = EN) %>%
+  mutate(realm = "mar") %>% mutate (LC = NT+LC) %>% select(-NT)
+
+# RLE est ext from Realm results workflow = est_rle_ext
+
+################ BIND results for coastal rle ext
+coa_rle_ext <- bind_rows(est_rle_ext, rle_mar_c_ext, rle_ter_c_ext) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), ~sum(.x, na.rm = TRUE)) %>%
+                mutate(realm = "coa"))) %>%   filter(realm =="coa")
+```
+
+EPL count per realm
+
+```{r}
+
+# EPL ter COUNT
+epl_ter_c_count <-  ter_results %>%
+  right_join(coastalink, by = c( "type" ="T_MAPCODE" )) %>% #RJ to select only ter typs in coastal list
+  select(type, EPL) %>%
+  filter(!is.na(EPL)) %>% # use only ter part of list (drop mar and est) 
+  count(EPL) %>%
+  pivot_wider(names_from = EPL, 
+              values_from = n, values_fill = 0) %>%
+     mutate(realm = "ter")
+
+# EPL mar COUNT
+epl_mar_c_count <-  mar_results %>%
+  right_join(coastalink, by =  "type") %>% #RJ to select only ter typs in coastal list
+  select(type, EPL) %>%
+  filter(!is.na(EPL)) %>% # use only ter part of list (drop mar and est) 
+  count(EPL) %>%
+  pivot_wider(names_from = EPL, 
+              values_from = n, values_fill = 0) %>%
+     mutate(realm = "mar")
+
+# EPL est count from Realm results workflow = est_rle_count
+
+################ BIND results for coastal epl count
+coa_epl_count <- bind_rows(est_epl_count, epl_mar_c_count, epl_ter_c_count) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), ~sum(.x, na.rm = TRUE)) %>%
+                mutate(realm = "coa"))) %>%   filter(realm =="coa")
+```
+
+EPL ext per realm
+
+```{r}
+
+# EPL ter EXT
+epl_ter_c_ext <-  ter_results %>%
+  right_join(coastalink, by = c( "type" ="T_MAPCODE" )) %>% #RJ to select only ter typs in coastal list
+  select(type, EPL, extent) %>%
+  filter(!is.na(EPL)) %>% # use only ter part of list (drop mar and est) 
+  group_by(EPL) %>%
+  summarise(extent = sum(extent), .groups = "drop" ) %>%
+  pivot_wider(names_from = EPL, values_from = extent, values_fill = 0) %>%
+  mutate(realm = "ter")
+
+# EPL mar ext
+epl_mar_c_ext <-  mar_results %>%
+  right_join(coastalink, by =  "type") %>% 
+  select(type, EPL, extent) %>%
+  filter(!is.na(EPL)) %>% # use only ter part of list (drop mar and est) 
+  group_by(EPL) %>%
+  summarise(extent = sum(extent), .groups = "drop" ) %>%
+  pivot_wider(names_from = EPL, values_from = extent, values_fill = 0) %>%
+     mutate(realm = "mar") 
+
+# EPL est ext from Realm results workflow = est_epl_ext
+
+################ BIND results for coastal epl ext
+coa_epl_ext <- bind_rows(est_epl_ext, epl_mar_c_ext, epl_ter_c_ext) %>%
+  bind_rows(
+    summarise(., across(where(is.numeric), ~sum(.x, na.rm = TRUE)) %>%
+                mutate(realm = "coa"))) %>%   filter(realm =="coa")
 ```
 
 ```{r}

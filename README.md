@@ -8,7 +8,7 @@ Terrestial, marine, estuarine and freshwater assessments completed in 2025, the 
 
 **GitHub Repositories for each assessment detail the assessment workflows:**
 
-[https://github.com/askowno/RLE_terr/](https://github.com/askowno/RLE_terr/blob/main/outputs/ter_results_for_integration.csv){.uri}
+<https://github.com/askowno/RLE_terr/>
 
 <https://github.com/askowno/RLE_est/>
 
@@ -18,7 +18,7 @@ Terrestial, marine, estuarine and freshwater assessments completed in 2025, the 
 
 Marine:
 
-Coastal:
+Coastal: Coastal.qmd
 
 After importing the results for each realm they were combined in R tidyverse and plotted using ggplot2:
 

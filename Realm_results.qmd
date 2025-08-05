@@ -56,11 +56,11 @@ sub_rle_ext   <- filter(nba18rleext, realm == "sub") %>% select(-Total)
 sub_epl_count <- filter(nba18eplcount, realm == "sub") %>% select(-Total)
 sub_epl_ext   <- filter(nba18eplext, realm == "sub") %>% select(-Total)
 
-# use nba2018 results for wetlands and coastal for now
-coa_rle_count <- filter(nba18rlecount, realm == "coa") %>% select(-Total)
-coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
-coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
-coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
+# use nba2018 results for wetlands and coastal if not running Coastal.qmd
+# coa_rle_count <- filter(nba18rlecount, realm == "coa") %>% select(-Total)
+# coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
+# coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
+# coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
 ```
 
@@ -199,6 +199,8 @@ wet_epl_ext <- wet_results %>%
 
 # Add coastal 
 ```
+
+### ***If Using the Coastal script (Coast.qmd) then stop here and run the coastal summaries, then return and run this script from here to bind the correct data*** 
 
 RLE results per realm (put all the tables together)
 
