@@ -61,7 +61,7 @@ rle_count_all_sa <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count_sa, we
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
@@ -81,7 +81,7 @@ rle_ext_all_sa <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext_sa, wet_rle_ex
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
