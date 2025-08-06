@@ -44,6 +44,8 @@ est_results <- read.csv("C:/Rdata/RLE_est/outputs/est_results_for_integration.cs
 
 mar_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Marine/mar_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "NT", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
 
+cst_results <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/Coast/cst_results_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "NT", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
+
 
 # read in nba2018 results to fill in  sub antarctic / marine
 nba18rlecount <- read.csv("C:/Users/skownoa/Dropbox/NBAwork/PEI/nba2018_rle_realm_count.csv")
@@ -55,12 +57,6 @@ sub_rle_count <- filter(nba18rlecount, realm == "sub") %>% select(-Total)
 sub_rle_ext   <- filter(nba18rleext, realm == "sub") %>% select(-Total)
 sub_epl_count <- filter(nba18eplcount, realm == "sub") %>% select(-Total)
 sub_epl_ext   <- filter(nba18eplext, realm == "sub") %>% select(-Total)
-
-# use nba2018 results for wetlands and coastal if not running Coastal.qmd
-# coa_rle_count <- filter(nba18rlecount, realm == "coa") %>% select(-Total)
-# coa_rle_ext   <- filter(nba18rleext, realm == "coa") %>% select(-Total)
-# coa_epl_count <- filter(nba18eplcount, realm == "coa") %>% select(-Total)
-# coa_epl_ext   <- filter(nba18eplext, realm == "coa") %>% select(-Total)
 
 ```
 
@@ -122,7 +118,7 @@ wet_rle_count <- wet_results %>%
     count(RLE) %>%
   pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
   mutate(realm = "wet")
-wet_rle_extent <- wet_results %>%
+wet_rle_ext <- wet_results %>%
   select(RLE, extent) %>%
   group_by(RLE) %>%
   summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
@@ -130,10 +126,20 @@ wet_rle_extent <- wet_results %>%
   mutate(realm = "wet")
 
 # Add coastal when done
-
+cst_rle_count <- cst_results %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "cst")
+cst_rle_ext <- cst_results %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "cst")
 ```
 
-Repeat data compilaiton for EPL
+Repeat data compilation for EPL
 
 ```{r}
 
@@ -198,23 +204,33 @@ wet_epl_ext <- wet_results %>%
   mutate(realm = "wet")
 
 # Add coastal 
+# Add coastal when done
+cst_epl_count <- cst_results %>%
+  select(EPL, type) %>%
+    count(EPL) %>%
+  pivot_wider(names_from = EPL, values_from = n, values_fill = 0) %>%
+  mutate(realm = "cst")
+cst_epl_ext <- cst_results %>%
+  select(EPL, extent) %>%
+  group_by(EPL) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = EPL, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "cst")
 ```
-
-### ***If Using the Coastal script (Coast.qmd) then stop here and run the coastal summaries, then return and run this script from here to bind the correct data*** 
 
 RLE results per realm (put all the tables together)
 
 ```{r}
 
 # BIND tables of RLE count together
-rle_count_all <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count, wet_rle_count, est_rle_count, coa_rle_count, sub_rle_count) %>%
+rle_count_all <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count, wet_rle_count, est_rle_count, cst_rle_count, sub_rle_count) %>%
   rename( `Critically Endangered` = CR, 
          `Endangered` = EN, 
          `Vulnerable` = VU, 
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
@@ -227,14 +243,14 @@ mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine",
 write.csv(rle_count_all, "outputs/rle_count_per_realm.csv")
 
 # BIND tables of RLE extent together
-rle_ext_all <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext, wet_rle_ext, est_rle_ext, coa_rle_ext, sub_rle_ext) %>%
+rle_ext_all <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext, wet_rle_ext, est_rle_ext, cst_rle_ext, sub_rle_ext) %>%
   rename( `Critically Endangered` = CR, 
          `Endangered` = EN, 
          `Vulnerable` = VU, 
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
@@ -252,14 +268,14 @@ EPL results per realm
 ```{r}
  
 # BIND tables of EPL count together
-epl_count_all <- bind_rows(ter_epl_count, mar_epl_count, est_epl_count, riv_epl_count, wet_epl_count, coa_epl_count, sub_epl_count) %>%
+epl_count_all <- bind_rows(ter_epl_count, mar_epl_count, est_epl_count, riv_epl_count, wet_epl_count, cst_epl_count, sub_epl_count) %>%
   rename( `Well Protected` = WP, 
          `Moderately Protected` = MP, 
          `Poorly Protected` = PP, 
          `Not Protected` = NP ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
@@ -273,14 +289,14 @@ mutate(realm = factor(realm, levels = c( "Sub-Antarctic", "Coastal", "Estuarine"
 write.csv(epl_count_all, "outputs/epl_count_per_realm.csv")
 
 # BIND tables of EPL extent together
-epl_ext_all <- bind_rows(ter_epl_ext, mar_epl_ext, est_epl_ext, riv_epl_ext, wet_epl_ext, coa_epl_ext, sub_epl_ext) %>%
+epl_ext_all <- bind_rows(ter_epl_ext, mar_epl_ext, est_epl_ext, riv_epl_ext, wet_epl_ext, cst_epl_ext, sub_epl_ext) %>%
   rename( `Well Protected` = WP, 
          `Moderately Protected` = MP, 
          `Poorly Protected` = PP, 
          `Not Protected` = NP ) %>%
    mutate(realm = recode(realm,
                         "sub" = "Sub-Antarctic",
-                        "coa" = "Coastal", 
+                        "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",

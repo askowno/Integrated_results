@@ -18,7 +18,7 @@ Terrestial, marine, estuarine and freshwater assessments completed in 2025, the 
 
 Marine:
 
-Coastal: Coastal.qmd
+<https://github.com/lrharris/nba2025_coast>
 
 After importing the results for each realm they were combined in R tidyverse and plotted using ggplot2:
 
@@ -26,13 +26,23 @@ After importing the results for each realm they were combined in R tidyverse and
 
 ## Results
 
+Using RLE for all realms:
+
 Red List of Ecosystems per realm: [outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv); [outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
+
+Using RLE for Marine, Terrestrial and Estuarine, and van Deventer et al., 2019 methods for Wetlands and Rivers:
+
+RLE + ETS per relam:
 
 Ecosystem Protection Level per realm: [outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv);[outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
 
-| Count of Types                  | Extent of Types               |
-|---------------------------------|-------------------------------|
+| Count of Types - RLE approach all realms | Extent of Types - RLE approach all realms |
+|----|----|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
+
+| Count of Types per realm (ETS riv and wet) | Extent of Types per realm (ETS riv and wet) |
+|------------------------------------|------------------------------------|
+| ![](outputs/rle_count_plot_sa.png) | ![](outputs/rle_ext_plot_sa.png) |
 
 Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder

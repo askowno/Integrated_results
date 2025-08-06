@@ -1,0 +1,161 @@
+---
+title: "Realm_results_sa"
+format: html
+---
+
+Run after Realm_results:
+
+<https://github.com/askowno/RLE_wet/blob/main/outputs/wet_results__sa_for_integration.csv>
+
+<https://github.com/askowno/RLE_riv/blob/main/outputs/riv_results_sa_for_integration.csv>
+
+```{r}
+# import ETS   for riv and wet integrated table
+
+riv_results_sa <- read.csv("C:/Rdata/RLE_riv/outputs/riv_results_sa_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
+
+wet_results_sa <- read.csv("C:/Rdata/RLE_wet/outputs/wet_results_sa_for_integration.csv")  %>% mutate(RLE = factor(RLE, levels = c("CR", "EN", "VU", "LC"), ordered = TRUE), EPL = factor(EPL, levels = c("WP", "MP", "PP", "NP"), ordered = TRUE)) 
+
+```
+
+Reformat the data to ensure that the results can be "bound" into a single table for each metric (RLE count, RLE extent, EPL count, EPL extent). Add realm column to ensure than in the bound data one can identify the rows for each realm.
+
+```{r}
+
+riv_rle_count_sa <- riv_results_sa %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "riv")
+riv_rle_ext_sa <- riv_results_sa %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)/1e3) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "riv")
+
+wet_rle_count_sa <- wet_results_sa %>%
+  select(RLE, type) %>%
+    count(RLE) %>%
+  pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
+  mutate(realm = "wet")
+wet_rle_ext_sa <- wet_results_sa %>%
+  select(RLE, extent) %>%
+  group_by(RLE) %>%
+  summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
+  pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
+  mutate(realm = "wet")
+
+
+```
+
+RLE results per realm (put all the tables together)
+
+```{r}
+
+# BIND tables of RLE count together
+rle_count_all_sa <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count_sa, wet_rle_count_sa, est_rle_count, cst_rle_count, sub_rle_count) %>%
+  rename( `Critically Endangered` = CR, 
+         `Endangered` = EN, 
+         `Vulnerable` = VU, 
+         `Least Concern` = LC ) %>%
+   mutate(realm = recode(realm,
+                        "sub" = "Sub-Antarctic",
+                        "coa" = "Coastal", 
+                        "mar" = "Marine",
+                        "est" = "Estuarine",
+                        "wet" = "Wetland",
+                        "riv" = "River",
+                        "ter" = "Terrestrial"))  %>%  
+mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+  arrange(realm)
+
+# Write to file
+write.csv(rle_count_all_sa, "outputs/rle_count_per_realm_sa.csv")
+
+# BIND tables of RLE extent together
+rle_ext_all_sa <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext_sa, wet_rle_ext_sa, est_rle_ext, cst_rle_ext, sub_rle_ext) %>%
+  rename( `Critically Endangered` = CR, 
+         `Endangered` = EN, 
+         `Vulnerable` = VU, 
+         `Least Concern` = LC ) %>%
+   mutate(realm = recode(realm,
+                        "sub" = "Sub-Antarctic",
+                        "coa" = "Coastal", 
+                        "mar" = "Marine",
+                        "est" = "Estuarine",
+                        "wet" = "Wetland",
+                        "riv" = "River",
+                        "ter" = "Terrestrial"))  %>%  
+mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+  arrange(realm)
+
+# Write to file
+write.csv(rle_ext_all_sa, "outputs/rle_ext_per_realm_sa.csv")
+```
+
+```{r}
+# Make RE count plots for booklet
+
+rle_count_plot_sa <- nba_plot(rle_count_all_sa,
+                     `realm`,
+                     1:4,
+                     CHRT = "bar",
+                     NUM = TRUE,
+                     LAB = "Percentage of ecosystem types",
+                     SAVE = NULL,
+                     SCALE_TEXT = 0.6)
+
+rle_count_plot_sa <- rle_count_plot_sa +
+  theme(
+    legend.position = "bottom",             # keep it at the bottom
+    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+
+ggsave(
+  filename = "outputs/rle_count_plot_sa.pdf",    # File name with extension for format
+  plot = rle_count_plot_sa,
+  device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
+  width = 9, height = 7, units = "cm") 
+
+
+# png format for maps and web content plots and maps 
+ggsave(
+  filename = "outputs/rle_count_plot_sa.png",    # File name with extension for format
+  plot = rle_count_plot_sa,
+  dpi = 300, 
+  width = 9, height = 7, units = "cm") 
+
+```
+
+```{r}
+# Make RLE  extent  plots for booklet
+
+rle_ext_plot_sa <- nba_plot(rle_ext_all_sa,
+                     `realm`,
+                     1:4,
+                     CHRT = "bar",
+                     NUM = FALSE,
+                     LAB = "Percentage of ecosystem extent",
+                     SAVE = NULL,
+                     SCALE_TEXT = 0.6)
+
+rle_ext_plot_sa <- rle_ext_plot_sa +
+  theme(
+    legend.position = "bottom",             # keep it at the bottom
+    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+
+ggsave(
+  filename = "outputs/rle_ext_plot_sa.pdf",    # File name with extension for format
+  plot = rle_ext_plot_sa,
+  device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
+  width = 9, height = 7, units = "cm") 
+
+
+# png format for maps and web content plots and maps 
+ggsave(
+  filename = "outputs/rle_ext_plot_sa.png",    # File name with extension for format
+  plot = rle_ext_plot_sa,
+  dpi = 300, 
+  width = 9, height = 7, units = "cm") 
+
+```
