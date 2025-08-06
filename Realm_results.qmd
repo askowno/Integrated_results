@@ -420,7 +420,7 @@ epl_ext_plot <- nba_plot(epl_ext_all,
                      1:4,
                      CHRT = "bar",
                      NUM = FALSE,
-                     LAB = "Extent of ecosystem types",
+                     LAB = "Percentage of ecosystem extent",
                      SAVE = NULL,
                      SCALE_TEXT = 0.6)
 
