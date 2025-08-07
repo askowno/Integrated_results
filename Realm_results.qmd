@@ -130,13 +130,16 @@ cst_rle_count <- cst_results %>%
   select(RLE, type) %>%
     count(RLE) %>%
   pivot_wider(names_from = RLE, values_from = n, values_fill = 0) %>%
-  mutate(realm = "cst")
+  mutate(realm = "cst") %>%
+  mutate(LC = NT + LC) %>% select(-NT)
+
 cst_rle_ext <- cst_results %>%
   select(RLE, extent) %>%
   group_by(RLE) %>%
   summarise(tot_extent = sum(extent, na.rm = TRUE)) %>%
   pivot_wider(names_from = RLE, values_from = tot_extent, values_fill = 0) %>%
-  mutate(realm = "cst")
+  mutate(realm = "cst") %>%
+  mutate(LC = NT + LC) %>% select(-NT)
 ```
 
 Repeat data compilation for EPL

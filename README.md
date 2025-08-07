@@ -42,7 +42,7 @@ Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_coun
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
 
 | Count of Types per realm (ETS riv and wet) | Extent of Types per realm (ETS riv and wet) |
-|------------------------------------|-----------------------------------|
+|------------------------------------|------------------------------------|
 | ![](outputs/rle_count_plot_sa.png) | ![](outputs/rle_ext_plot_sa.png) |
 
 Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder
