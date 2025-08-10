@@ -8,6 +8,7 @@ Load Libraries
 ```{r}
 # libraries
 library(tidyverse)
+library(grid)
 library(readxl)
 library(nbaR)
 library(extrafont) # this has tools for embedding fonts in vector graphics which 
@@ -331,6 +332,16 @@ rle_count_plot <- rle_count_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+rle_count_plot <- rle_count_plot +
+     annotation_custom(
+    grob = textGrob(
+      "(A)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/rle_count_plot.pdf",    # File name with extension for format
@@ -338,13 +349,12 @@ ggsave(
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
   width = 9, height = 7, units = "cm") 
 
-
-# png format for maps and web content plots and maps 
+# png  format for maps and web content plots and maps 
 ggsave(
   filename = "outputs/rle_count_plot.png",    # File name with extension for format
   plot = rle_count_plot,
   dpi = 300, 
-  width = 9, height = 7, units = "cm") 
+  width = 9, height = 7, units = "cm") # png format for maps and web content plots and maps 
 
 ```
 
@@ -364,6 +374,16 @@ rle_ext_plot <- rle_ext_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+rle_ext_plot <- rle_ext_plot +
+annotation_custom(
+    grob = textGrob(
+      "(B)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/rle_ext_plot.pdf",    # File name with extension for format
@@ -399,6 +419,16 @@ epl_count_plot <- epl_count_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+epl_count_plot <- epl_count_plot +
+annotation_custom(
+    grob = textGrob(
+      "(A)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/epl_count_plot.pdf",    # File name with extension for format
@@ -431,6 +461,16 @@ epl_ext_plot <- epl_ext_plot +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+epl_ext_plot <- epl_ext_plot +
+annotation_custom(
+    grob = textGrob(
+      "(B)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/epl_ext_plot.pdf",    # File name with extension for format

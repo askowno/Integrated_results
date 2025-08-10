@@ -110,6 +110,16 @@ rle_count_plot_sa <- rle_count_plot_sa +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+rle_count_plot_sa <- rle_count_plot_sa +
+annotation_custom(
+    grob = textGrob(
+      "(A)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/rle_count_plot_sa.pdf",    # File name with extension for format
@@ -143,6 +153,16 @@ rle_ext_plot_sa <- rle_ext_plot_sa +
   theme(
     legend.position = "bottom",             # keep it at the bottom
     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+rle_ext_plot_sa <- rle_ext_plot_sa +
+annotation_custom(
+    grob = textGrob(
+      "(B)", 
+      x = unit(0.00, "npc"),  # slight overshoot left
+      y = unit(1.00, "npc"),   # slight overshoot top
+      hjust = 0, vjust = 1,
+      gp = gpar(fontsize = 6)
+    )
+  )
 
 ggsave(
   filename = "outputs/rle_ext_plot_sa.pdf",    # File name with extension for format
