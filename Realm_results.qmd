@@ -314,6 +314,76 @@ mutate(realm = factor(realm, levels = c( "Sub-Antarctic", "Coastal", "Estuarine"
 write.csv(epl_ext_all, "outputs/epl_ext_per_realm.csv")
 ```
 
+Selected results as a table for booklet and website
+
+```{r}
+
+# EPL 
+realm_epl <- epl_count_all %>%
+  rowwise() %>%
+  mutate(total = sum(c_across(`Well Protected`:`Not Protected`), na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(
+    pct_WP = `Well Protected` / total * 100,
+    pct_NP = `Not Protected` / total * 100
+  ) %>%
+  select(realm, pct_WP, pct_NP)
+
+overall_epl <- epl_count_all %>%
+  filter(realm != "Coastal") %>%
+  summarise(
+    WP = sum(`Well Protected`, na.rm = TRUE),
+    NP = sum(`Not Protected`, na.rm = TRUE),
+    total = sum(`Well Protected` + `Moderately Protected` + `Poorly Protected` + `Not Protected`, na.rm = TRUE)
+  ) %>%
+  mutate(
+    pct_WP = WP / total * 100,
+    pct_NP = NP / total * 100,
+    realm = "Overall"
+  ) %>%
+  select(realm, pct_WP, pct_NP)
+
+# Combine
+final_epl_perc <- bind_rows(realm_pct, overall_pct)
+# Write to file
+write.csv(final_epl_perc, "outputs/final_epl_perc.csv")
+
+# RLE stats for booklet 
+realm_rle <- rle_count_all %>%
+  rowwise() %>%
+  mutate(total = sum(c_across(`Critically Endangered`:`Least Concern`), na.rm = TRUE), 
+         threatened = sum(c_across(`Critically Endangered`:`Vulnerable`), na.rm = TRUE),
+         pct_TH = threatened / total * 100) %>%
+    select(realm, pct_TH)
+
+# Overall excluding realm = "cst"
+overall_rle <- rle_count_all %>%
+  filter(realm != "cst") %>%
+  summarise(
+    CR = sum(`Critically Endangered`, na.rm = TRUE),
+    EN = sum(`Endangered`, na.rm = TRUE),
+    VU = sum(`Vulnerable`, na.rm = TRUE),
+    LC = sum(`Least Concern`, na.rm = TRUE)
+  ) %>%
+  mutate(
+    total = CR + EN + VU + LC,
+    threatened = CR + EN + VU,
+    pct_TH = threatened / total * 100,
+    realm = "Overall"
+  ) %>%
+  select(realm, pct_TH)
+
+# Combine
+final_rle_perc <- bind_rows(realm_rle, overall_rle)
+
+
+# Write to file
+write.csv(final_rle_perc, "outputs/final_rle_perc.csv")
+
+
+
+```
+
 RLE plots per realm
 
 ```{r}

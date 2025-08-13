@@ -38,3 +38,9 @@ Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_coun
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
 
 Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder
+
+984 ecosystems assessed
+
+Percentage Threatened per realm and overall : [outputs/final_rle_realm.csv](outputs/final_rle_realm.csv)
+
+Percentage WP and NP per realm and overall : [outputs/final_epl_realm.csv](outputs/final_epl_realm.csv)
