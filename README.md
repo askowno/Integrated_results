@@ -8,15 +8,15 @@ Terrestrial, marine, estuarine and freshwater assessments completed in 2025, the
 
 **GitHub Repositories for each assessment detail the assessment workflows:**
 
-<https://github.com/askowno/RLE_terr/>
+<https://github.com/askowno/RLE_terr>
 
-<https://github.com/askowno/RLE_est/>
+<https://github.com/askowno/RLE_est>
 
-<https://github.com/askowno/RLE_wet/>
+<https://github.com/askowno/RLE_wet>
 
-<https://github.com/askowno/RLE_riv/>
+<https://github.com/askowno/RLE_riv>
 
-Marine:
+<https://gitlab.com/nba_2025/ecosystem_assessment/threat_status>
 
 <https://github.com/lrharris/nba2025_coast>
 
@@ -26,23 +26,15 @@ After importing the results for each realm they were combined in R tidyverse and
 
 **Using RLE for all realms:**
 
-Integrated ecosystem results : [outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv); [outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
-
-**Using van Deventer et al., 2019 methods for Wetlands and Rivers:**
-
-Integrated ecosystem results : [outputs/rle_count_per_realm_sa.csv](outputs/rle_count_per_realm_sa.csv) ; [outputs/rle_ext_per_realm_sa.csv](outputs/rle_ext_per_realm_sa.csv)
+Integrated ecosystem results : [outputs/rle_count_per_realm.csv](outputs/rle_count_per_realm.csv); & [outputs/rle_ext_per_realm.csv](outputs/rle_ext_per_realm.csv)
 
 **Ecosystem Protection Level for all realms:**
 
-Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv);[outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
+Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv); & [outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
 
 | Count of Types - RLE approach all realms | Extent of Types - RLE approach all realms |
-|----|----|
+|------------------------------------|------------------------------------|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
-
-| Count of Types per realm (ETS riv and wet) | Extent of Types per realm (ETS riv and wet) |
-|----|----|
-| ![](outputs/rle_count_plot_sa.png) | ![](outputs/rle_ext_plot_sa.png) |
 
 Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder
