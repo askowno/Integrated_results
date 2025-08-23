@@ -39,7 +39,7 @@ Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_coun
 
 Note: High resolution pdf versions of these plots, with embedded fonts, can be found within the outputs folder
 
-984 ecosystems assessed
+986 ecosystems assessed (not included are: (Agulhas) Mangrove Forests = EN (IUCN global), Swamp Forest = NE)
 
 Percentage Threatened per realm and overall : [outputs/final_rle_realm.csv](outputs/final_rle_realm.csv)
 
