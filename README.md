@@ -33,7 +33,7 @@ Integrated ecosystem results : [outputs/rle_count_per_realm.csv](outputs/rle_cou
 Integrated ecosystem results: [outputs/epl_count_per_realm.csv](outputs/epl_count_per_realm.csv); & [outputs/epl_ext_per_realm.csv](outputs/epl_ext_per_realm.csv)
 
 | Count of Types - RLE approach all realms | Extent of Types - RLE approach all realms |
-|------------------------------------|------------------------------------|
+|----|----|
 | ![](outputs/rle_count_plot.png) | ![](outputs/rle_ext_plot.png) |
 | ![](outputs/epl_count_plot.png) | ![](outputs/epl_ext_plot.png) |
 
