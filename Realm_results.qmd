@@ -569,26 +569,27 @@ rle_hl <- nba_plot(rle_count_all,
                      NUM = FALSE,
                      LAB = "Percentage of ecosystem types",
                      SAVE = NULL,
-                     SCALE_TEXT = 0.6)
+                     SCALE_TEXT = 0.6) +
+           theme(legend.position = "none")
 
-rle_hl <- rle_hl +
-  theme(
-    legend.position = "bottom",             # keep it at the bottom
-    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
-  
+# rle_hl <- rle_hl +
+#   theme(
+#     legend.position = "bottom",             # keep it at the bottom
+#     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+#   
 
 ggsave(
   filename = "outputs/rle_hl.pdf",    # File name with extension for format
   plot = rle_hl,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
-  width = 9, height = 7, units = "cm") 
+  width = 7, height = 7, units = "cm") 
 
 # png  format for maps and web content plots and maps 
 ggsave(
   filename = "outputs/rle_hl.png",    # File name with extension for format
   plot = rle_hl,
   dpi = 300, 
-  width = 9, height = 7, units = "cm") # png format for maps and web content plots and maps 
+  width = 7, height = 7, units = "cm") # png format for maps and web content plots and maps 
 
 # Make EPL count plots for booklet ########################################
 
@@ -599,19 +600,20 @@ epl_hl <- nba_plot(epl_count_all,
                      NUM = FALSE,
                      LAB = "Percentage of ecosystem types",
                      SAVE = NULL,
-                     SCALE_TEXT = 0.6)
+                     SCALE_TEXT = 0.6) + 
+          theme(legend.position = "none")
 
-epl_hl <- epl_hl +
-  theme(
-    legend.position = "bottom",             # keep it at the bottom
-    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+ # epl_hl <- epl_hl +
+ #  theme(
+ #    legend.position = "bottom",             # keep it at the bottom
+ #    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
 
 
 ggsave(
   filename = "outputs/epl_hl.pdf",    # File name with extension for format
   plot = epl_hl,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
-  width = 9, height = 7, units = "cm") 
+  width = 7, height = 7, units = "cm") 
 
 
 # png format for maps and web content plots and maps 
@@ -619,6 +621,6 @@ ggsave(
   filename = "outputs/epl_hl.png",    # File name with extension for format
   plot = epl_hl,
   dpi = 300, 
-  width = 9, height = 7, units = "cm") 
+  width = 7, height = 7, units = "cm") 
 
 ```
