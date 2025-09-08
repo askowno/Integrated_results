@@ -233,14 +233,14 @@ rle_count_all <- bind_rows(ter_rle_count, mar_rle_count, riv_rle_count, wet_rle_
          `Vulnerable` = VU, 
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
-                        "sub" = "Sub-Antarctic",
+                        "sub" = "Subantarctic",
                         "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
                         "riv" = "River",
                         "ter" = "Terrestrial"))  %>%  
-mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+mutate(realm = factor(realm, levels = c("Subantarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
   arrange(realm)
 
 # Write to file
@@ -253,14 +253,14 @@ rle_ext_all <- bind_rows(ter_rle_ext, mar_rle_ext, riv_rle_ext, wet_rle_ext, est
          `Vulnerable` = VU, 
          `Least Concern` = LC ) %>%
    mutate(realm = recode(realm,
-                        "sub" = "Sub-Antarctic",
+                        "sub" = "Subantarctic",
                         "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
                         "wet" = "Wetland",
                         "riv" = "River",
                         "ter" = "Terrestrial"))  %>%  
-mutate(realm = factor(realm, levels = c("Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+mutate(realm = factor(realm, levels = c("Subantarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
   arrange(realm)
 
 # Write to file
@@ -278,7 +278,7 @@ epl_count_all <- bind_rows(ter_epl_count, mar_epl_count, est_epl_count, riv_epl_
          `Poorly Protected` = PP, 
          `Not Protected` = NP ) %>%
    mutate(realm = recode(realm,
-                        "sub" = "Sub-Antarctic",
+                        "sub" = "Subantarctic",
                         "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
@@ -286,7 +286,7 @@ epl_count_all <- bind_rows(ter_epl_count, mar_epl_count, est_epl_count, riv_epl_
                         "riv" = "River",
                         "ter" = "Terrestrial",
                         "Overall" = "Overall"))  %>%  
-mutate(realm = factor(realm, levels = c( "Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+mutate(realm = factor(realm, levels = c( "Subantarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
   arrange(realm)
 
 # Write to file
@@ -299,7 +299,7 @@ epl_ext_all <- bind_rows(ter_epl_ext, mar_epl_ext, est_epl_ext, riv_epl_ext, wet
          `Poorly Protected` = PP, 
          `Not Protected` = NP ) %>%
    mutate(realm = recode(realm,
-                        "sub" = "Sub-Antarctic",
+                        "sub" = "Subantarctic",
                         "cst" = "Coastal", 
                         "mar" = "Marine",
                         "est" = "Estuarine",
@@ -307,7 +307,7 @@ epl_ext_all <- bind_rows(ter_epl_ext, mar_epl_ext, est_epl_ext, riv_epl_ext, wet
                         "riv" = "River",
                         "ter" = "Terrestrial",
                         "Overall" = "Overall"))  %>%  
-mutate(realm = factor(realm, levels = c( "Sub-Antarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
+mutate(realm = factor(realm, levels = c( "Subantarctic", "Coastal", "Estuarine", "Marine",  "Wetland", "River", "Terrestrial"))) %>%
   arrange(realm) 
 
 # Write to file
