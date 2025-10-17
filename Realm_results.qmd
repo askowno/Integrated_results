@@ -344,7 +344,7 @@ overall_epl <- epl_count_all %>%
   select(realm, pct_WP, pct_NP)
 
 # Combine
-final_epl_perc <- bind_rows(realm_pct, overall_pct)
+final_epl_perc <- bind_rows(realm_epl, overall_epl)
 # Write to file
 write.csv(final_epl_perc, "outputs/final_epl_perc.csv")
 
