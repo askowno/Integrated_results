@@ -575,21 +575,21 @@ rle_hl <- nba_plot(rle_count_all,
  rle_hl <- rle_hl +
    theme(
      legend.position = "bottom",             # keep it at the bottom
-     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+     legend.margin = margin(l = -45, r = -5, t = -5, b = 5))
    
 
 ggsave(
   filename = "outputs/rle_hl.pdf",    # File name with extension for format
   plot = rle_hl,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
-  width = 7, height = 7, units = "cm") 
+  width = 9, height = 7, units = "cm") 
 
 # png  format for maps and web content plots and maps 
 ggsave(
   filename = "outputs/rle_hl.png",    # File name with extension for format
   plot = rle_hl,
-  dpi = 300, 
-  width = 7, height = 7, units = "cm") # png format for maps and web content plots and maps 
+  dpi = 200, 
+  width = 9, height = 7, units = "cm") # png format for maps and web content plots and maps 
 
 # Make EPL count plots for booklet ########################################
 
@@ -606,7 +606,7 @@ epl_hl <- nba_plot(epl_count_all,
   epl_hl <- epl_hl +
    theme(
      legend.position = "bottom",             # keep it at the bottom
-     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+     legend.margin = margin(l = -45, r = -5, t = -5, b = 5))
 
 
 ggsave(
@@ -620,7 +620,7 @@ ggsave(
 ggsave(
   filename = "outputs/epl_hl.png",    # File name with extension for format
   plot = epl_hl,
-  dpi = 300, 
+  dpi = 200, 
   width = 9, height = 7, units = "cm") 
 
 ```
