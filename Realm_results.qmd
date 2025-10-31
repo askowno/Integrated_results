@@ -557,7 +557,7 @@ ggsave(
   width = 9, height = 7, units = "cm") 
 ```
 
-Make Plots for Headline Indicator figure (3)
+Make Plots for Headline Indicator figure (3) in website (for bookelt drop legend and make 7x7
 
 ```{r}
 # Make RLE and EPL count plots for booklet Headline Indicator plot (figure 3) 
@@ -570,13 +570,13 @@ rle_hl <- nba_plot(rle_count_all,
                      LAB = "Percentage of ecosystem types",
                      SAVE = NULL,
                      SCALE_TEXT = 0.6) +
-           theme(legend.position = "none")
+           theme(legend.position = "bottom")
 
-# rle_hl <- rle_hl +
-#   theme(
-#     legend.position = "bottom",             # keep it at the bottom
-#     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
-#   
+ rle_hl <- rle_hl +
+   theme(
+     legend.position = "bottom",             # keep it at the bottom
+     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+   
 
 ggsave(
   filename = "outputs/rle_hl.pdf",    # File name with extension for format
@@ -601,19 +601,19 @@ epl_hl <- nba_plot(epl_count_all,
                      LAB = "Percentage of ecosystem types",
                      SAVE = NULL,
                      SCALE_TEXT = 0.6) + 
-          theme(legend.position = "none")
+          theme(legend.position = "bottom")
 
- # epl_hl <- epl_hl +
- #  theme(
- #    legend.position = "bottom",             # keep it at the bottom
- #    legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
+  epl_hl <- epl_hl +
+   theme(
+     legend.position = "bottom",             # keep it at the bottom
+     legend.margin = margin(l = -45, r = -5, t = -5, b = -5))
 
 
 ggsave(
   filename = "outputs/epl_hl.pdf",    # File name with extension for format
   plot = epl_hl,
   device = "pdf", # this embeds the fonts for GE to use (see first step of addfont)
-  width = 7, height = 7, units = "cm") 
+  width = 9, height = 7, units = "cm") 
 
 
 # png format for maps and web content plots and maps 
@@ -621,6 +621,6 @@ ggsave(
   filename = "outputs/epl_hl.png",    # File name with extension for format
   plot = epl_hl,
   dpi = 300, 
-  width = 7, height = 7, units = "cm") 
+  width = 9, height = 7, units = "cm") 
 
 ```
